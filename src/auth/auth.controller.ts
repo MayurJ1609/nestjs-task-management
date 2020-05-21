@@ -32,7 +32,7 @@ export class AuthController {
 
   @Post('/test')
   @UseGuards(AuthGuard()) //Understand AuthGaurd()
-  test(@GetUser() user: User) {
-    console.log('Controller User : ', user);
+  test(@Req() req) {
+    // console.log('Controller User : ', user);
   }
 }
