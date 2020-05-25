@@ -21,12 +21,11 @@ import { Task } from './task.entity';
 import { TaskStatus } from './task-status.enum';
 
 @Controller('tasks')
-@UseGuards(AuthGuard())
+@UseGuards(AuthGuard('jwt'))
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  @UseGuards(AuthGuard())
   getTasks(
     @Query(ValidationPipe) filterDto: GetTasksFilterDto,
   ): Promise<Task[]> {
