@@ -31,7 +31,7 @@ export class AuthController {
   }
 
   @Post('/test')
-  @UseGuards(AuthGuard()) //Understand AuthGaurd()
+  @UseGuards(AuthGuard()) //Understand AuthGuard()
   test(@GetUser() user: User) {
     console.log('Controller Req : ', user);
   }
