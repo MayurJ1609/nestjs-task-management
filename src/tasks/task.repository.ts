@@ -1,3 +1,5 @@
+import { Logger, InternalServerErrorException } from '@nestjs/common';
+import { User } from './../auth/user.entity';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Repository, EntityRepository } from 'typeorm';
@@ -6,9 +8,12 @@ import { TaskStatus } from './task-status.enum';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
-  async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+  private logger = new Logger('TaskRepository');
+
+  async getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
     const { status, search } = filterDto;
     const query = this.createQueryBuilder('task');
+    query.where('task.userId = :userId', { userId: user.id });
     if (status) {
       query.andWhere('task.status = :status', { status });
     }
@@ -18,17 +23,37 @@ export class TaskRepository extends Repository<Task> {
         { search: `%${search}%` },
       );
     }
-    const tasks = await query.getMany();
-    return tasks;
+    try {
+      const tasks = await query.getMany();
+      return tasks;
+    } catch (error) {
+      this.logger.error(
+        `Failed to get tasks for user "${
+          user.username
+        }", Filters: ${JSON.stringify(filterDto)}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException();
+    }
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
     const { title, description } = createTaskDto;
     const task = new Task();
     task.title = title;
     task.description = description;
     task.status = TaskStatus.OPEN;
-    await task.save();
+    task.user = user;
+    try {
+      await task.save();
+    } catch (error) {
+      this.logger.error(
+        `Failed to create a task for user "${user.username}". Data: ${createTaskDto}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException();
+    }
+    delete task.user;
     return task;
   }
 }
