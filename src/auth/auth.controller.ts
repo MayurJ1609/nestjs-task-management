@@ -30,6 +30,7 @@ export class AuthController {
     return this.authService.signIn(authCredentialsDto);
   }
 
+  //Unwanted code from here - Code written to test custom decorator @GetUser()
   @Post('/test')
   @UseGuards(AuthGuard()) //Understand AuthGuard()
   test(@GetUser() user: User) {
