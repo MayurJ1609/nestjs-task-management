@@ -25,14 +25,15 @@ export class AuthService {
       authCredentialsDto,
     );
     if (!username) {
+      this.logger.warn(
+        `Validation of username and password failed because of some reason for user: ${authCredentialsDto.username}`,
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
-
     const payLoad: JwtPayload = { username };
-
     const accessToken = await this.jwtService.sign(payLoad);
     this.logger.debug(
-      `Generated JWT Toaken with payload ${JSON.stringify(payLoad)}`,
+      `Generated JWT Token with payload ${JSON.stringify(payLoad)}`,
     );
     return { accessToken };
   }

@@ -22,11 +22,9 @@ export class TasksService {
     const found = await this.taskRepository.findOne({
       where: { id, userId: user.id },
     });
-
     if (!found) {
       throw new NotFoundException(`Task with ${id} not found`);
     }
-
     return found;
   }
 

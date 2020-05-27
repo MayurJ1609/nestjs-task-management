@@ -35,9 +35,9 @@ export class TasksController {
     @GetUser() user: User,
   ): Promise<Task[]> {
     this.logger.verbose(
-      `User "${user.username}" retrieving all tasks. Filters: ${JSON.stringify(
-        filterDto,
-      )}`,
+      `User "${JSON.stringify(
+        user,
+      )}" retrieving all tasks. Filters: ${JSON.stringify(filterDto)}`,
     );
     return this.tasksService.getTasks(filterDto, user);
   }
