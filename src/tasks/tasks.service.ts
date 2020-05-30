@@ -2,19 +2,27 @@ import { User } from './../auth/user.entity';
 import { TaskRepository } from './task.repository';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { TaskStatus } from './task-status.enum';
 
 @Injectable()
 export class TasksService {
+  private logger = new Logger('TaskRepository');
+
   constructor(
     @InjectRepository(TaskRepository)
     private taskRepository: TaskRepository,
   ) {}
 
   async getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
+    console.log('Hi');
+    this.logger.debug(
+      `Values for testing using Jest | filterDto : ${JSON.stringify(
+        filterDto,
+      )} | user : ${JSON.stringify(user)}`,
+    );
     return this.taskRepository.getTasks(filterDto, user);
   }
 
